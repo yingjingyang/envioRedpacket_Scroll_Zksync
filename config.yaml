@@ -1,0 +1,23 @@
+name: My Envio Indexer
+networks:
+- id: 11155111
+  # op: 10, arbitrum: 42161, scroll: 534352, sepolia: 11155111, zksync-era: 324
+  # start_block: 115319405 # optimism
+  # start_block: 2817659 # scroll
+  # start_block: 174675651 # arbitrum-one
+  start_block: 5154924 # sepolia
+  # start_block: 28355028 # zksync-era
+  contracts:
+  - name: HappyRedPacket
+    address:
+    # - 0x62E8cf62Dc0B7d7afF9A1A58CeA14976fDB16a85 # optimism
+    # - 0xC90D844679C0eFEB37522c43711D4856d192BD62 # scroll
+    # - 0x075FE5D2CD5D22D744Da94d81658143abf49D589 # arbitrum
+    - 0x7aee9933802d9E150e8FdEDc5a022a6d386BB44d # sepolia
+    # - 0x0Aa38Cffc6A72e6349c8bfF22497AeC4A02fc75c # zksync-era
+    handler: src/EventHandlers.ts
+    events:
+    - event: ClaimSuccess(bytes32 id, address claimer, uint256 claimed_value, address token_address, bytes32 lock)
+    - event: CreationSuccess(uint256 total, bytes32 id, string name, string message, address creator, uint256 creation_time, address token_address, uint256 number, bool ifrandom, uint256 duration, bytes32 lock)
+      isAsync: true
+    - event: RefundSuccess(bytes32 id, address token_address, uint256 remaining_balance, bytes32 lock)

@@ -1,0 +1,62 @@
+type Claim  {
+  id: ID!
+  happyRedPacketId: Bytes! # bytes32
+  claimer: Bytes! # address
+  claimedValue: BigInt! # uint256
+  tokenAddress: Bytes! # address
+  lock: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+  redpacket: Redpacket!
+}
+
+type Redpacket {
+  id: ID!
+  total: BigInt! # uint256
+  happyRedPacketId: Bytes! # bytes32
+  name: String! # string
+  message: String! # string
+  creator: Bytes! # address
+  creationTime: BigInt! # uint256
+  tokenAddress: Bytes! # address
+  token: Token!
+  number: BigInt! # uint256
+  remainToClaim: BigInt! # uint256
+  ifrandom: Boolean! # bool
+  duration: BigInt! # uint256
+  lock: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+  expireTimestamp: BigInt!
+  claimers: [Claim!]! @derivedFrom(field: "redpacket")
+  refunded: Boolean!
+  refunder: Refund
+  allClaimed: Boolean!
+}
+
+type Refund {
+  id: ID!
+  happyRedPacketId: Bytes! # bytes32
+  tokenAddress: Bytes! # address
+  remainingBalance: BigInt! # uint256
+  lock: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Lastupdate {
+  id: ID!
+  lastupdateTimestamp: BigInt!
+}
+
+type Token {
+  id: ID! # address
+  address: Bytes!
+  symbol: String!
+  name: String!
+  decimals: BigInt!
+  chainID: BigInt!
+}
