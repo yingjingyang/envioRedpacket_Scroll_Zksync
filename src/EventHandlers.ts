@@ -2,12 +2,12 @@
  * Please refer to https://docs.envio.dev for a thorough guide on all Envio indexer features
  */
 import {
-  HappyRedPacketContract,
-  ClaimEntity,
-  RedpacketEntity,
-  RefundEntity,
-  LastupdateEntity,
-  TokenEntity,
+  HappyRedPacket,
+  Claim,
+  Redpacket,
+  Refund,
+  Lastupdate,
+  Token,
 } from "generated";
 
 import { GetClient } from "./utils/client";
@@ -33,28 +33,23 @@ const Erc20ABI = [
   },
 ];
 
+HappyRedPacket.ClaimSuccess.handler(async ({ event, context }) => {
+  let claimID = event.transaction.hash + event.logIndex
 
-HappyRedPacketContract.ClaimSuccess.loader(({event,context}) => {
-  context.Redpacket.load(event.params.id,undefined);
-})
-
-HappyRedPacketContract.ClaimSuccess.handler(({ event, context }) => {
-  let claimID = event.transactionHash + event.logIndex
-
-  const claimEntity: ClaimEntity = {
+  const claimEntity: Claim = {
     id: claimID,
     happyRedPacketId: event.params.id,
     claimer: event.params.claimer,
     claimedValue: event.params.claimed_value,
     tokenAddress: event.params.token_address,
     lock: event.params.lock,
-    blockNumber: BigInt(event.blockNumber),
-    blockTimestamp: BigInt(event.blockTimestamp),
-    transactionHash: event.transactionHash,
+    blockNumber: BigInt(event.block.number),
+    blockTimestamp: BigInt(event.block.timestamp),
+    transactionHash: event.transaction.hash,
     redpacket_id: event.params.id,
   };
 
-  let redpacket = context.Redpacket.get(event.params.id);
+  let redpacket = await context.Redpacket.get(event.params.id);
   if (redpacket == undefined) {
     return
   }
@@ -91,25 +86,20 @@ HappyRedPacketContract.ClaimSuccess.handler(({ event, context }) => {
 
   context.Lastupdate.set({
     id: "1",
-    lastupdateTimestamp: BigInt(event.blockTimestamp),
+    lastupdateTimestamp: BigInt(event.block.timestamp),
   })
 
   context.Claim.set(claimEntity);
 });
 
-HappyRedPacketContract.CreationSuccess.loader(({event,context}) => {
-  context.Redpacket.load(event.params.id,undefined);
-  context.Token.load(event.params.token_address)
-})
 
-
-HappyRedPacketContract.CreationSuccess.handlerAsync(async ({ event, context }) => {
+HappyRedPacket.CreationSuccess.handler(async ({ event, context }) => {
   context.Lastupdate.set({
     id: "1",
-    lastupdateTimestamp: BigInt(event.blockTimestamp),
+    lastupdateTimestamp: BigInt(event.block.timestamp),
   })
 
-  const redpacketEntity: RedpacketEntity = {
+  const redpacketEntity: Redpacket = {
     id: event.params.id,
     total: event.params.total,
     happyRedPacketId: event.params.id,
@@ -124,9 +114,9 @@ HappyRedPacketContract.CreationSuccess.handlerAsync(async ({ event, context }) =
     ifrandom: event.params.ifrandom,
     duration: event.params.duration,
     lock: event.params.lock,
-    blockNumber: BigInt(event.blockNumber),
-    blockTimestamp: BigInt(event.blockTimestamp),
-    transactionHash: event.transactionHash,
+    blockNumber: BigInt(event.block.number),
+    blockTimestamp: BigInt(event.block.timestamp),
+    transactionHash: event.transaction.hash,
     expireTimestamp: event.params.creation_time + event.params.duration,
     refunded: false,
     refunder_id: undefined,
@@ -182,17 +172,17 @@ HappyRedPacketContract.CreationSuccess.handlerAsync(async ({ event, context }) =
   context.Redpacket.set(redpacketEntity)
 });
 
-HappyRedPacketContract.RefundSuccess.loader(({event,context}) => {
-  context.Redpacket.load(event.params.id,undefined);
-})
+// HappyRedPacketContract.RefundSuccess.loader(({event,context}) => {
+//   context.Redpacket.load(event.params.id,undefined);
+// })
 
-HappyRedPacketContract.RefundSuccess.handler(({ event, context }) => {
-  let redpacket = context.Redpacket.get(event.params.id);
+HappyRedPacket.RefundSuccess.handler(async ({ event, context }) => {
+  let redpacket = await context.Redpacket.get(event.params.id);
   if (redpacket == undefined) {
     return
   }
 
-  let tempRefundId = event.transactionHash + event.logIndex
+  let tempRefundId = event.transaction.hash + event.logIndex
 
   context.Refund.set({
     id: tempRefundId,
@@ -200,9 +190,9 @@ HappyRedPacketContract.RefundSuccess.handler(({ event, context }) => {
     tokenAddress: event.params.token_address,
     remainingBalance: event.params.remaining_balance,
     lock: event.params.lock,
-    blockNumber: BigInt(event.blockNumber),
-    blockTimestamp: BigInt(event.blockTimestamp),
-    transactionHash: event.transactionHash,
+    blockNumber: BigInt(event.block.number),
+    blockTimestamp: BigInt(event.block.timestamp),
+    transactionHash: event.transaction.hash,
   });
 
   context.Redpacket.set({
@@ -214,6 +204,6 @@ HappyRedPacketContract.RefundSuccess.handler(({ event, context }) => {
 
   context.Lastupdate.set({
     id: "1",
-    lastupdateTimestamp: BigInt(event.blockTimestamp),
+    lastupdateTimestamp: BigInt(event.block.timestamp),
   })
 });
