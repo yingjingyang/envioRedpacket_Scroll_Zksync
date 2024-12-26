@@ -1,4 +1,5 @@
 name: My Envio Indexer
+description: My Envio indexer
 networks:
 - id: 534352
   # op: 10, arbitrum: 42161, scroll: 534352, sepolia: 11155111, zksync-era: 324
@@ -9,6 +10,7 @@ networks:
   # start_block: 28355028 # zksync-era
   contracts:
   - name: HappyRedPacket
+    abi_file_path: ./abis/HappyRedPacket.json
     address:
     # - 0x62E8cf62Dc0B7d7afF9A1A58CeA14976fDB16a85 # optimism
     - 0xC90D844679C0eFEB37522c43711D4856d192BD62 # scroll
