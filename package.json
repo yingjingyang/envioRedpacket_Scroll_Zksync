@@ -22,7 +22,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "envio": "2.21.5",
+    "envio": "2.32.3",
     "viem": "^2.21.57",
     "axios": "^1.6.0",
     "ethers": "^5.7.2"
